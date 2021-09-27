@@ -2,16 +2,15 @@ import sys
 import nltk
 nltk.download(['punkt', 'wordnet', 'averaged_perceptron_tagger', 'stopwords'])
 
-import numpy as np
 import pandas as pd 
 import re
 from sqlalchemy import create_engine
-from sklearn.metrics import precision_score, accuracy_score, f1_score , classification_report
+from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
-from sklearn.pipeline import Pipeline, FeatureUnion
+from sklearn.pipeline import Pipeline
 from nltk.tokenize import word_tokenize
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.corpus import stopwords
@@ -19,6 +18,20 @@ import pickle
 
 
 def load_data(database_filepath):
+    """
+    Load data from database
+    
+    Input: database_filepath - String
+           The file path of the database
+                    
+    Output: X - Pandas DataFrame
+            Feature variables to be used in machine learning
+            y - Pandas DataFrame
+            Response variables (multioutput labels to be predicted)
+            
+            category_names - List
+            List of the y response variable column names
+    """
     engine = create_engine('sqlite:///' + database_filepath)
     table_name = database_filepath[:-3].split('/')[-1]
     df = pd.read_sql_table(table_name, engine)
@@ -29,6 +42,9 @@ def load_data(database_filepath):
 
 
 def tokenize(text):
+    """
+       Tokenizer that cleans the text and break it into matrix for machine learning
+    """
     
     text = re.sub(r"[^a-zA-Z0-9]"," ", text.lower())
     tokens = word_tokenize(text)
@@ -40,6 +56,12 @@ def tokenize(text):
 
 
 def build_model():
+    """
+    Build the pipeline model to be used as the model
+    
+    Output: cv - model
+            The model structure to be used for fitting and predicting
+    """
     
     pipeline = Pipeline([
     ('vec', CountVectorizer(tokenizer= tokenize)),
@@ -56,15 +78,19 @@ def build_model():
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
-    
+     """
+    Evalueate the performance of the model.
+    Prints out the classification report of each response variable (category)
+    """
     Y_preds = model.predict(X_test)
     for i, category in enumerate(category_names):
         print(category, classification_report(Y_test.iloc[:,i], Y_preds[:,i]))
 
 
 def save_model(model, model_filepath):
-    
-    
+     """
+      Saves the model to the specified model path
+    """
     model_pkl = open(model_filepath, 'wb')
     pickle.dump(model, model_pkl)
     model_pkl.close()
@@ -72,6 +98,9 @@ def save_model(model, model_filepath):
 
 
 def main():
+     """
+    Create machine learning models and save output to pickle file
+    """
     if len(sys.argv) == 3:
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
