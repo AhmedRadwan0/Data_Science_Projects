@@ -23,20 +23,21 @@ The web app will also display visualizations of the data.
 
 # File structure:
 ```
-- app
-| - template
-| |- master.html  # main page of web app
-| |- go.html  # classification result page of web app
-|- run.py  # Flask file that runs app
+- DisasterResponseProject
+  - app
+  | - template
+  | |- master.html  # main page of web app
+  | |- go.html  # classification result page of web app
+  |- run.py  # Flask file that runs app
 
-- data
-|- disaster_categories.csv  # data to process (messages categories)
-|- disaster_messages.csv  # data to process (content of messages and their related categories)
-|- process_data.py        # python script runs ETL pipeline that cleans data and stores in database
-|- InsertDatabaseName.db   # database to save clean data to
+  - data
+  |- disaster_categories.csv  # data to process (messages categories)
+  |- disaster_messages.csv  # data to process (content of messages and their related categories)
+  |- process_data.py        # python script runs ETL pipeline that cleans data and stores in database
+  |- InsertDatabaseName.db   # database to save clean data to
 
-- models
-|- train_classifier.py   # python script runs ML pipeline that trains classifier, print the classification report for each category and saves the model
-|- classifier.pkl  # saved model 
+  - models
+  |- train_classifier.py   # python script runs ML pipeline that trains classifier, print the classification report for each category and saves the model
+  |- classifier.pkl  # saved model 
 ```
 
